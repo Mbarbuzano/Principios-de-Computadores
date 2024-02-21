@@ -1,6 +1,6 @@
 # PR1. PRINCIPIO DE COMPUTADORES.
-# Autor:
-# Fecha ultima modificacion:
+# Autor: Marcos Barbuzano Socorro alu0101629469@ull.edu.es
+# Fecha ultima modificacion: Hoy :)
 
 	.data
 
