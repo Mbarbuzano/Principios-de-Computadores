@@ -127,6 +127,43 @@ str_matTiene:	.asciiz	"\n\nLa matriz tiene dimension "
 
 .text
 
+
+# void change_elto(structMat* mat, int indF, int indC, float valor) {
+change_elto:
+lw $t0, nCol($a1)
+#   int numCol = mat->nCol;
+mul $t1, $a2, $t0
+add $t1, $t1, $a3
+#   mat->elementos[indF * numCol + indC] = valor;
+lw $t2, elementos($a1)
+sll $t3, $t1, 2
+add $t2, $t2, $t3
+lwc1 $f2, 0($t2)
+
+jr $ra
+# }
+
+# void swap(float* e1, float* e2) {
+#   float temp1 = *e1;
+#   float temp2 = *e2;
+#   *e1 = temp2;
+#   *e2 = temp1;
+# }
+swap:
+lw $f1, 4($sp)
+lw $f2, 8($sp)
+
+move $f0, $f1
+move $f2, $f3
+
+sw $f0, 4($sp)
+sw $
+
+
+
+
+
+
 main:
 
 #int main() {
@@ -140,7 +177,7 @@ syscall
 
 #  while(true) {
 while:
-#    print_mat(matTrabajo);
+#    print_mat(matTrabajo);swap:
 jal print_mat
 #    std::cout <<
 #    "(0) Terminar el programa\n"
@@ -326,18 +363,12 @@ mov.s $t4, $v0
 #        change_elto(matTrabajo, indFil, indCol, valor);
 #      }
 procedimiento de change_elto
-
-#      if(opcion == 4) {
-opcion_cuatro:
-#        intercambia(matTrabajo, indFil, indCol);
-#      }
-procedimiento de intercambia
-#
-#      continue;
-#    }
-b while
-
-#
+void swap(float* e1, float* e2) {
+  float temp1 = *e1;
+  float temp2 = *e2;
+  *e1 = temp2;
+  *e2 = temp1;
+}
 #    // Opción 7 ////////////////////////////////////////////////////////////
 #    if(opcion == 7) {
 #      float valorMin;
