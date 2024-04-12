@@ -124,11 +124,85 @@ str_valMin:	.asciiz	"\nEl valor minimo esta en ("
 str_conValor:	.asciiz	") con valor "
 
 str_matTiene:	.asciiz	"\n\nLa matriz tiene dimension "
+x: .asciiz "x"
+endl: .asciiz "\n"
 
 .text
 
+#void print_mat(structMat* mat) {
+print_mat:
+#  int nFil = mat->nFil;
+#  int nCol = mat->nCol;
+#  float* elem = mat->elementos;
 
-# void change_elto(structMat* mat, int indF, int indC, float valor) {
+#  std::cout << "\n\nLa matriz tiene dimension " << nFil << 'x' << nCol << '\n';
+li $v0, 4
+la $a0, str_matTiene
+syscall
+
+li $v0, 1
+lw $a0, nFil($a1)
+syscall
+
+li $v0, 4
+la $a0, x
+syscall
+
+li $v0, 1
+lw $a0, nCol($a1)
+syscall
+
+li $v0, 4
+la $a0, endl
+syscall
+
+li $t0, 0 # int f
+
+# for(int f = 0; f < nFil; f++) {
+li $t0,0 # f = 0
+
+for_print_mat_fil:
+
+beq $t0,$t1,fin_print_mat
+
+# for(int c = 0; c < nCol; c++) {
+li $t2,0 # c = 0
+
+for_print_mat_col:
+#c < nCol
+bge $t2, $t3, anadir_linea
+# std::cout << elem[f*nCol + c] << ' ';
+mul $t4, $t0, $t3 # $t4 -> f*nCol
+add $t4, $t4, $t2 # $t4 -> [f*nCol + c]
+mul $t4, $t4, $t5 # $t4 -> elem[f*nCol + c]
+addi $t2, $t2, 1
+
+lwc1 $f12, 0($t4)
+li $v0, 2
+syscall
+
+li $v0, 4
+la $a0, endl
+syscall
+
+b for_print_mat_col
+
+anadir_linea:
+#  std::cout << '\n';
+li $v0,4
+la $a0, endl
+syscall
+addi $t0, $t0, 1
+b for_print_mat_fil
+
+# std::cout << '\n';
+fin_print_mat:
+li $v0,4
+la $a0, endl
+syscall
+jr $ra
+
+
 change_elto:
 lw $t0, nCol($a1)
 #   int numCol = mat->nCol;
@@ -161,6 +235,7 @@ sw $
 
 
 
+tie:
 
 
 
@@ -174,10 +249,11 @@ syscall
 
 
 #  structMat* matTrabajo = &mat1;
+lw $a1, mat1
 
 #  while(true) {
 while:
-#    print_mat(matTrabajo);swap:
+#    print_mat(matTrabajo);
 jal print_mat
 #    std::cout <<
 #    "(0) Terminar el programa\n"
@@ -297,16 +373,16 @@ syscall
 move $t3, $v0
 
 #      if ((indFil < 0) || (indFil >= matTrabajo->nFil)) {
-if_fila_inc:
+if_fila_incorrecto:
 lw $t3, 0($a1)
-bltz $t2, if_fila_inc_si
-bge $t2, $t3, if_fila_inc_si
-b if_column_inc
+bltz $t2, if_fila_incorrecto_si
+bge $t2, $t3, if_fila_incorrecto_si
+b if_column_incorrecto
 
 #        std::cerr << "Error: dimension incorrecta.  Numero de fila incorrecto\n";
 #        continue;  // volvemos al principio del bucle
 #      }
-if_fila_inc_si:
+if_fila_incorrecto_si:
 
 li $v0, 4
 la $a0, str_errorFil
@@ -318,7 +394,7 @@ b while
 #      int indCol;
 #      std::cin >> indCol;
 #      if ((indCol < 0) || (indCol >= matTrabajo->nCol)){
-if_column_inc:
+if_column_incorrecto:
 
 li $v0, 4
 la $a0, str_indCol
@@ -329,15 +405,15 @@ syscall
 move $t3, $v0
 
 lw $t3, 4($a1)
-bltz $t4, if_column_inc_si
-bge $t4, $t3, if_column_inc_si
+bltz $t4, if_column_incorrecto_si
+bge $t4, $t3, if_column_incorrecto_si
 
 b opcion_tres
 
 #        std::cerr << "Error: dimension incorrecta.  Numero de columna incorrecto\n";
 #        continue;  // volvemos al principio del bucle
 #      }
-if_column_inc_si:
+if_column_incorrecto_si:
 li $v0, 4
 la $a0, str_errorCol
 syscall
@@ -358,19 +434,28 @@ syscall
 #        std::cin >> valor;
 li $v0, 6
 syscall
-mov.s $t4, $v0
+move $t4, $v0
 
 #        change_elto(matTrabajo, indFil, indCol, valor);
 #      }
-procedimiento de change_elto
-void swap(float* e1, float* e2) {
-  float temp1 = *e1;
-  float temp2 = *e2;
-  *e1 = temp2;
-  *e2 = temp1;
-}
+
+
+#      if(opcion == 4) {
+opcion_cuatro:
+#        intercambia(matTrabajo, indFil, indCol);
+#      }
+
+#
+#      continue;
+#    }
+b while
+
+#
 #    // Opción 7 ////////////////////////////////////////////////////////////
 #    if(opcion == 7) {
+opcion_siete:
+bne $t0, 7, opcion_incorrecta
+
 #      float valorMin;
 #      int filaMin;
 #      int columnaMin;
@@ -381,8 +466,15 @@ void swap(float* e1, float* e2) {
 #    }
 #
 #    // Opción Incorrecta ///////////////////////////////////////////////////////
+opcion_incorrecta:
 #    std::cout << "Error: opcion incorrecta\n";
+li $v0, 4
+la $a0, str_errorOpc
+syscall
+
+b while
 #  }
+
 fin:
 #  std::cout << "\nTermina el programa\n";
 li $v0, 4
