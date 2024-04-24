@@ -72,8 +72,15 @@ jr $ra
 
 
 # int ordenado(double *v, const int n) {
+ordenado:
+addi $sp, $sp, -12
+sw $ra, 0($sp)
+sw $s0, 4($sp)
+sw $s1, 8($sp)
 #     int resultado = 1;
+lw $t0, 1 #resultado
 #     int i = 0;
+lw $t1, 0 #contador
 #     while (i < n-1) {
 #         if (v[i+1] >= v[i]) {
 #             resultado = 0;
