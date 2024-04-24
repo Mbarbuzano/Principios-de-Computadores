@@ -1,7 +1,7 @@
 # Principio de Computadores. Preparación para el Microexamen
 # Operaciones con funciones y direccionamiento indirecto
-# Autor: 
-# Fecha última modificación: 
+# Autor: Marcos Barbuzano Socorro
+# Fecha última modificación: si
 #include <iostream>
 
 # const int n1 = 10;
@@ -25,16 +25,50 @@ v3:     .double 7.0, 5.0, 2.0, 1.0
 cad1:   .asciiz "\nVector con dimension "
 cad2:   .asciiz "\nIntentando mezcla con dos vectores ...\n"
 cad3:   .asciiz "\nFIN DEL PROGRAMA\n"
+endl:   .asciiz "\n"
 
     .text
 
 # void printvec(double *v, const int n) {
+printvec:
+addi $sp, $sp, -12
+sw $ra, 0($sp)
+sw $s0, 4($sp)
+sw $s1, 8($sp)
 #     for (int i = 0; i < n; i++)
+lw $s2, 0 #i
+
+bucle_print:
+bgt $s2, $s1, bucle_print_fin
 #         std::cout << v[i] << " ";
-    
+lw $t0, 0
+mul $t0, $s2, sizeD
+lwc1 $f0, 0($t0)
+
+li $v0, 3
+syscall
+
 #     std::cout << "\n";
-#     return;
+li $v0, 4
+la $a0, SPACE
+syscall
+    
+#     return;#     std::cout << "\n";
 # }
+
+addi $s2, $s2, 1
+b bucle_print
+
+bucle_print_fin:
+li $v0, 4
+la $a0, endl
+syscall
+
+lw $s1, 8($sp)
+lw $s0, 4($sp)
+lw $ra, 0($sp)
+addi $sp, $sp, 12
+jr $ra
 
 
 # int ordenado(double *v, const int n) {
